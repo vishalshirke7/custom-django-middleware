@@ -32,7 +32,7 @@ Login Endpoint -
       method - POST, params - username, password
 ```
 
-Testing API - (This is to test the token authentication working)
+Testing API - (This is to test the token authentication working, if token is invalid user is denied the access)
 ```
       http:127.0.0.1:8000/api/v1/test_api/
       method - Get
