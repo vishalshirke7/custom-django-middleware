@@ -2,11 +2,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
-from rest_framework.status import (
-    HTTP_400_BAD_REQUEST,
-    HTTP_404_NOT_FOUND,
-    HTTP_200_OK
-)
+from rest_framework.status import (HTTP_400_BAD_REQUEST,
+                                   HTTP_404_NOT_FOUND,
+                                   HTTP_200_OK)
 from rest_framework.response import Response
 
 from .models import Token
@@ -17,6 +15,14 @@ from .customauth import authenticate
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def login(request):
+    """
+    This api accepts input as username and password and returns an
+    authentication token which is valid for 30 minutes
+
+    :param request: username, password
+    :return: token
+    """
+
     username = request.data.get("username")
     password = request.data.get("password")
     if username is None or password is None:
@@ -34,5 +40,9 @@ def login(request):
 @csrf_exempt
 @api_view(["GET"])
 def testapi(request):
+    """
+    A sample test api to test token based authentication
+    """
+
     data = {'test api': 'working fine'}
     return Response(data, status=HTTP_200_OK)

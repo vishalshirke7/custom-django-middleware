@@ -2,14 +2,13 @@ import re
 import datetime
 import json
 import pytz
-from rest_framework import exceptions, HTTP_HEADER_ENCODING
+from rest_framework import HTTP_HEADER_ENCODING
 
 from django.utils.deprecation import MiddlewareMixin
 from django.http import HttpResponse
 from django.utils.six import text_type
 
 from .models import Token
-
 
 TOKEN_EXPIRE_TIME = datetime.timedelta(minutes=30)
 
@@ -38,27 +37,11 @@ class AuthMiddleware(MiddlewareMixin):
                 msg = {'error': 'No authentication header provided'}
                 data = json.dumps(msg)
                 return HttpResponse(data, content_type='application/json', status=500)
-                # return JsonResponse({'error': msg}, 500)
-
-            if len(auth) == 1:
-                msg = {'error': 'Invalid token header. No credentials provided.'}
-                data = json.dumps(msg)
-                return HttpResponse(data, content_type='application/json', status=500)
-            elif len(auth) > 2:
-                msg = {'error': 'Invalid token header. Token string should not contain spaces.'}
-                data = json.dumps(msg)
-                return HttpResponse(data, content_type='application/json', status=500)
-
-            try:
-                key = auth[1].decode()
-            except UnicodeError:
-                msg = {'error': 'Invalid token header. Token string should not contain invalid characters.'}
-                data = json.dumps(msg)
-                return HttpResponse(data, content_type='application/json', status=500)
 
             model = Token
 
             try:
+                key = auth[1].decode()
                 token = model.objects.select_related('user').get(key=key)
             except model.DoesNotExist:
                 msg = {'error': 'Invalid token'}
@@ -68,8 +51,9 @@ class AuthMiddleware(MiddlewareMixin):
             utc_now = datetime.datetime.utcnow()
             utc_now = utc_now.replace(tzinfo=pytz.utc)
 
+            # checking the token validity
             if token.created < utc_now - TOKEN_EXPIRE_TIME:
-                msg = {'error': 'Token has expired'}
+                msg = {'error': 'Token has expired. Please login again'}
                 data = json.dumps(msg)
                 return HttpResponse(data, content_type='application/json', status=500)
             response = self.get_response(request)

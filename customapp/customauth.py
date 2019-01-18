@@ -6,9 +6,8 @@ TOKEN_EXPIRE_TIME = datetime.timedelta(minutes=30)
 
 
 def authenticate(username, password):
-
     try:
-        user = User.objects.get(username=username)
+        user = User.objects.get(username=username, password=password)
     except User.DoesNotExist:
         user = User(username=username, password=password)
         user.save()

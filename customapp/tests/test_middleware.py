@@ -13,12 +13,13 @@ class AuthMiddlewateTest(unittest.TestCase):
 
     def test_requestProcessing(self):
         """
-        Failure Test case. It checks for authentication token in every request
-
+        This test case checks for authentication token in every request
+        and if it is not present it tells to obtain one
         """
+
         request = self.factory.get('/test_api/')
         response = self.middleware.process_request(request)
-        self.assertIsNone(response)
+        self.assertIsNotNone(response)
 
     def test_exempt_login(self):
 
