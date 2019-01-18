@@ -34,5 +34,5 @@ def login(request):
 @csrf_exempt
 @api_view(["GET"])
 def testapi(request):
-    data = {'test data': 'working fine'}
+    data = {'test api': 'working fine'}
     return Response(data, status=HTTP_200_OK)
